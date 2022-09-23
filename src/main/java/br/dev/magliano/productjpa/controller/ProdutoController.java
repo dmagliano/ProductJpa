@@ -1,12 +1,9 @@
 package br.dev.magliano.productjpa.controller;
 
-import br.dev.magliano.productjpa.controller.dto.AvaliacaoForm;
 import br.dev.magliano.productjpa.controller.dto.ProdutoDetalhesDTO;
 import br.dev.magliano.productjpa.controller.dto.ProdutoForm;
-import br.dev.magliano.productjpa.entity.Avaliacao;
 import br.dev.magliano.productjpa.entity.Produto;
 import br.dev.magliano.productjpa.entity.Usuario;
-import br.dev.magliano.productjpa.repository.AvaliacaoRepository;
 import br.dev.magliano.productjpa.repository.ProdutoRepository;
 import br.dev.magliano.productjpa.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,10 +25,6 @@ public class ProdutoController {
 
     @Autowired
     private ProdutoRepository produtoRepository;
-
-    @Autowired
-    private AvaliacaoRepository avaliacaoRepository;
-
 
     @GetMapping
     public ResponseEntity<List<ProdutoDetalhesDTO>> listaTodos(){
@@ -58,25 +51,6 @@ public class ProdutoController {
         ProdutoDetalhesDTO produtoDetalhesDTO = produto.toDetalhesDTO();
 
         return ResponseEntity.ok(produtoDetalhesDTO);
-    }
-
-    @PostMapping("/avaliacao/{idProduto}")
-    @Transactional
-    public ResponseEntity cadastraAvaliacao(@PathVariable("idProduto") Long idProduto,
-                                          @RequestParam("userId") Long idUsuario,
-                                          @RequestBody @Valid AvaliacaoForm avaliacaoform) {
-
-        Usuario usuario = usuarioRepository.findById(idUsuario).orElseThrow(EntityNotFoundException::new);
-        Produto produto = produtoRepository.findById(idProduto).orElseThrow(EntityNotFoundException::new);
-
-        Avaliacao avaliacao = new Avaliacao(avaliacaoform.getAvaliacao(), produto, usuario);
-        produto.adicionaAvaliacao(avaliacao);
-
-        avaliacaoRepository.save(avaliacao);
-
-        //produtoRepository.saveAndFlush(produto);
-
-        return ResponseEntity.ok(avaliacao.toAvaliacaoDTO());
     }
 
 }
