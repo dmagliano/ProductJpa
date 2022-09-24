@@ -1,6 +1,7 @@
 package br.dev.magliano.productjpa.controller.dto;
 
 import br.dev.magliano.productjpa.entity.Usuario;
+import br.dev.magliano.productjpa.security.PlainPassword;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -27,7 +28,7 @@ public class UsuarioForm {
                 this.username,
                 this.nome,
                 this.email,
-                this.senha
+                new PlainPassword(this.senha)
         );
     }
 }

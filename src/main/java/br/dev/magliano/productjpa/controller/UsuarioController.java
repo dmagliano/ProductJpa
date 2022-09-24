@@ -1,5 +1,6 @@
 package br.dev.magliano.productjpa.controller;
 
+import br.dev.magliano.productjpa.controller.dto.UsuarioDto;
 import br.dev.magliano.productjpa.controller.dto.UsuarioForm;
 import br.dev.magliano.productjpa.entity.Usuario;
 import br.dev.magliano.productjpa.repository.UsuarioRepository;
@@ -18,9 +19,9 @@ public class UsuarioController {
     @Autowired
     UsuarioRepository usuarioRepository;
 
-    @PostMapping("/")
+    @PostMapping
     @Transactional
-    public ResponseEntity cadastra(@RequestBody UsuarioForm usuarioForm){
+    public ResponseEntity<UsuarioDto> cadastra(@RequestBody UsuarioForm usuarioForm){
 
         Usuario novoUsuario = usuarioForm.toEntity();
         usuarioRepository.save(novoUsuario);

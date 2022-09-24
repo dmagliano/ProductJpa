@@ -1,6 +1,7 @@
 package br.dev.magliano.productjpa.entity;
 
 import br.dev.magliano.productjpa.controller.dto.UsuarioDto;
+import br.dev.magliano.productjpa.security.PlainPassword;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -10,7 +11,7 @@ public class Usuario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
+    @Column(name = "ID", nullable = false)
     private Long id;
 
     private String username;
@@ -26,11 +27,11 @@ public class Usuario {
     public Usuario() {
     }
 
-    public Usuario(String username, String nome, String email, String senha) {
+    public Usuario(String username, String nome, String email, PlainPassword plainPassword) {
         this.username = username;
         this.nome = nome;
         this.email = email;
-        this.senha = senha;
+        this.senha = plainPassword.encode();
     }
 
     public String getUsername() {
