@@ -2,7 +2,6 @@ HELP.md
 target/
 !**/src/main/**/target/
 !**/src/test/**/target/
-!**/src/main/resource/db/**
 
 ### STS ###
 .apt_generated
@@ -32,3 +31,4 @@ build/
 ### VS Code ###
 .vscode/
 /.mvn/wrapper/
+/src/main/resources/db/**
