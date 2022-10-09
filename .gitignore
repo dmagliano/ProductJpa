@@ -31,3 +31,4 @@ build/
 ### VS Code ###
 .vscode/
 /.mvn/wrapper/
+/src/main/resources/db/mydb:produtoDB.mv.db
