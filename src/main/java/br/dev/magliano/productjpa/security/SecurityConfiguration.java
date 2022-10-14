@@ -7,19 +7,12 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.BeanIds;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.web.AuthenticationEntryPoint;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 
 @Configuration
 @EnableWebSecurity
@@ -42,26 +35,28 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         http
                 .authorizeRequests()
                 .antMatchers(HttpMethod.POST, "/usuario").permitAll()
-                .antMatchers("/auth/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/usuario").hasAuthority("USER")
                 .antMatchers("/h2-console/**").permitAll()
                 .anyRequest().authenticated()
-                .and()
-                .headers().frameOptions().disable()
                 .and()
                 .cors()
                 .and()
                 .csrf().disable()
-                .addFilterBefore(new JwtAuthenticationFilter(tokenManager, usuarioService),
-                        UsernamePasswordAuthenticationFilter.class)
-                .exceptionHandling()
-                .authenticationEntryPoint(new JwtAuthenticationEntryPoint());
+                .headers().frameOptions().disable()
+                .and()
+                .oauth2ResourceServer().jwt().jwtAuthenticationConverter(getJwtAuthenticationConverter());
 
     }
 
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(this.usuarioService)
-                .passwordEncoder(new BCryptPasswordEncoder());
+    JwtAuthenticationConverter getJwtAuthenticationConverter() {
+
+        JwtGrantedAuthoritiesConverter converter = new JwtGrantedAuthoritiesConverter();
+        converter.setAuthoritiesClaimName("authorities");
+        converter.setAuthorityPrefix("");
+        JwtAuthenticationConverter authenticationConverter = new JwtAuthenticationConverter();
+        authenticationConverter.setJwtGrantedAuthoritiesConverter(converter);
+        return authenticationConverter;
+
     }
 
     @Override
@@ -70,14 +65,5 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 "/configuration/**", "/swagger-resources/**", "/css/**", "/**.ico", "/js/**");
     }
 
-    private static class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
-
-        @Override
-        public void commence(HttpServletRequest request, HttpServletResponse response,
-                             AuthenticationException authException) throws IOException {
-
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Você não está autorizado a acessar esse recurso.");
-        }
-    }
 }
 
