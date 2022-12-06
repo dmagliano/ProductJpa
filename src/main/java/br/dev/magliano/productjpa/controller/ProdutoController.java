@@ -4,53 +4,80 @@ import br.dev.magliano.productjpa.controller.dto.ProdutoDetalhesDTO;
 import br.dev.magliano.productjpa.controller.dto.ProdutoForm;
 import br.dev.magliano.productjpa.entity.Produto;
 import br.dev.magliano.productjpa.entity.Usuario;
+import br.dev.magliano.productjpa.entity.Vendedor;
 import br.dev.magliano.productjpa.repository.ProdutoRepository;
 import br.dev.magliano.productjpa.repository.UsuarioRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
+import br.dev.magliano.productjpa.repository.VendedoRepository;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
-import java.util.List;
-import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/produto")
 public class ProdutoController {
 
-    @Autowired
-    private UsuarioRepository usuarioRepository;
+  @Autowired
+  private VendedoRepository vendedoRepository;
 
-    @Autowired
-    private ProdutoRepository produtoRepository;
+  @Autowired
+  private UsuarioRepository usuarioRepository;
 
-    @GetMapping
-    public ResponseEntity<List<ProdutoDetalhesDTO>> listaTodos(){
-        List<Produto> produtoList = produtoRepository.findAll();
+  @Autowired
+  private ProdutoRepository produtoRepository;
 
-        List<ProdutoDetalhesDTO> outputList = produtoList.stream()
-                .map(Produto::toDetalhesDTO)
-                .collect(Collectors.toList());
+  @GetMapping
+  public ResponseEntity<List<ProdutoDetalhesDTO>> listaTodos() {
+    List<Produto> produtoList = produtoRepository.findAll();
+    List<ProdutoDetalhesDTO> outputList = produtoList.stream()
+        .map(Produto::toDetalhesDTO)
+        .collect(Collectors.toList());
 
-        return ResponseEntity.ok(outputList);
-    }
+    return ResponseEntity.ok(outputList);
+  }
 
-    @PostMapping("/{idUsuario}")
-    @Transactional
-    public ResponseEntity cadastraProduto(@PathVariable("idUsuario") Long idUsuario,
-                                          @RequestBody @Valid ProdutoForm produtoForm) {
+  @GetMapping("/datas/")
+  public ResponseEntity<List<ProdutoDetalhesDTO>> listaPorDatas(
+      @RequestParam(name = "dataComeco") LocalDateTime dataComeco,
+      @RequestParam(name = "dataFim") LocalDateTime dataFim) {
 
-        Usuario usuario = usuarioRepository.findById(idUsuario).orElseThrow(EntityNotFoundException::new);
-        Produto produto = produtoForm.toEntity(usuario);
+    List<Produto> produtoList = produtoRepository.findProdutoByDate(dataFim, dataComeco);
 
+    List<ProdutoDetalhesDTO> outputList = produtoList.stream()
+        .map(Produto::toDetalhesDTO)
+        .collect(Collectors.toList());
 
-        produtoRepository.save(produto);
+    return ResponseEntity.ok(outputList);
+  }
 
-        ProdutoDetalhesDTO produtoDetalhesDTO = produto.toDetalhesDTO();
+  @PostMapping("/{idVendedor}")
+  @Transactional
+  public ResponseEntity cadastraProduto(@PathVariable("idVendedor") Long idVendedor,
+      @RequestBody @Valid ProdutoForm produtoForm) {
 
-        return ResponseEntity.ok(produtoDetalhesDTO);
-    }
+    Vendedor vendedor = vendedoRepository.findById(idVendedor)
+        .orElseThrow(EntityNotFoundException::new);
+
+    Usuario usuario = vendedor.getUsuarioVendedor();
+    Produto produto = produtoForm.toEntity(usuario);
+
+    produtoRepository.save(produto);
+
+    ProdutoDetalhesDTO produtoDetalhesDTO = produto.toDetalhesDTO();
+
+    return ResponseEntity.ok(produtoDetalhesDTO);
+  }
+
 
 }

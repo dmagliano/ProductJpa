@@ -7,11 +7,13 @@ import java.time.LocalDateTime;
 
 @Getter
 @AllArgsConstructor
-public class AvaliacaoDetalhesDTO {
+public class AvaliacaoDTO {
 
-    private Long id;
+    private Long idAvaliacao;
 
     private String avaliacao;
+
+    private Long idUsuario;
 
     private String usuario;
 

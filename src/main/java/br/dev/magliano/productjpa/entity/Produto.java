@@ -1,6 +1,6 @@
 package br.dev.magliano.productjpa.entity;
 
-import br.dev.magliano.productjpa.controller.dto.AvaliacaoOutputDTO;
+import br.dev.magliano.productjpa.controller.dto.AvaliacaoProdutoDTO;
 import br.dev.magliano.productjpa.controller.dto.ProdutoDetalhesDTO;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -33,7 +33,8 @@ public class Produto {
 
     @OneToMany(
             mappedBy = "produto",
-            cascade = CascadeType.ALL)
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
     private List<Avaliacao> avaliacaoList;
 
 
@@ -52,10 +53,10 @@ public class Produto {
 
     public ProdutoDetalhesDTO toDetalhesDTO() {
 
-        List<AvaliacaoOutputDTO> avaliacaoOutput = new ArrayList<>();
+        List<AvaliacaoProdutoDTO> avaliacaoOutput = new ArrayList<>();
 
         if (this.avaliacaoList != null){
-            avaliacaoOutput = this.avaliacaoList.stream().map(Avaliacao::toAvaliacaoDTO).collect(Collectors.toList());
+            avaliacaoOutput = this.avaliacaoList.stream().map(Avaliacao::toAvaliacaoProdutoDTO).collect(Collectors.toList());
         }
 
         return new ProdutoDetalhesDTO(

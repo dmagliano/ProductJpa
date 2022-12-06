@@ -1,7 +1,7 @@
 package br.dev.magliano.productjpa.entity;
 
-import br.dev.magliano.productjpa.controller.dto.AvaliacaoDetalhesDTO;
-import br.dev.magliano.productjpa.controller.dto.AvaliacaoOutputDTO;
+import br.dev.magliano.productjpa.controller.dto.AvaliacaoDTO;
+import br.dev.magliano.productjpa.controller.dto.AvaliacaoProdutoDTO;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 public class Avaliacao {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NonNull
@@ -38,17 +38,20 @@ public class Avaliacao {
         this.usuario = usuario;
     }
 
-    public AvaliacaoOutputDTO toAvaliacaoDTO(){
-        return new AvaliacaoOutputDTO(
-                this.avaliacao,
-                this.usuario.getUsername()
+    public AvaliacaoProdutoDTO toAvaliacaoProdutoDTO(){
+        return new AvaliacaoProdutoDTO(
+            this.produto.getId(),
+            this.produto.getNome(),
+            this.id,
+            this.avaliacao
         );
     }
 
-    public AvaliacaoDetalhesDTO toDetalhesDTO(){
-        return new AvaliacaoDetalhesDTO(
+    public AvaliacaoDTO toAvaliacaoDTO(){
+        return new AvaliacaoDTO(
                 this.id,
                 this.avaliacao,
+                this.usuario.getId(),
                 this.usuario.getUsername(),
                 this.dataCriacao
         );

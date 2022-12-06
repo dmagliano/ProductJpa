@@ -2,6 +2,7 @@ package br.dev.magliano.productjpa.entity;
 
 import br.dev.magliano.productjpa.controller.dto.UsuarioDto;
 
+import java.util.List;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
@@ -10,7 +11,6 @@ public class Usuario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
     private Long id;
 
     private String username;
@@ -22,6 +22,13 @@ public class Usuario {
     private String senha;
 
     private LocalDateTime dataCriacao = LocalDateTime.now();
+
+    @OneToMany(
+        mappedBy = "usuario",
+        cascade = CascadeType.ALL,
+        orphanRemoval = true
+    )
+    private List<Avaliacao> avaliacaoList;
 
     public Usuario() {
     }

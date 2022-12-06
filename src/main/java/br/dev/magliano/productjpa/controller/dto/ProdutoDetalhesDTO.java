@@ -21,10 +21,10 @@ public class ProdutoDetalhesDTO {
 
     private String usernameVendedor;
 
-    private List<AvaliacaoOutputDTO> avaliacaoList;
+    private List<AvaliacaoProdutoDTO> avaliacaoList;
 
     public ProdutoDetalhesDTO(Long id, String codigoBarras, String nome, String descricao,
-                              BigDecimal preco, String usernameVendedor, List<AvaliacaoOutputDTO> avaliacaoList) {
+                              BigDecimal preco, String usernameVendedor, List<AvaliacaoProdutoDTO> avaliacaoList) {
         this.id = id;
         this.codigoBarras = codigoBarras;
         this.nome = nome;
